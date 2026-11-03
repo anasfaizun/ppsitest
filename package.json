@@ -1,0 +1,19 @@
+{
+  "name": "pad-intelligence-lite",
+  "version": "0.9.4",
+  "description": "PAD Intelligence Lite — Sistem Intelijen Potensi Pendapatan Daerah Kota Bandar Lampung (Akademik MVP)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "bapenda",
+    "bandar-lampung",
+    "pad-intelligence",
+    "reklame",
+    "audit-data"
+  ],
+  "author": "Analis Data BAPENDA (Demo)",
+  "license": "MIT"
+}

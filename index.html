@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAD Intelligence Lite — BAPENDA Kota Bandar Lampung</title>
+  <meta name="description" content="Sistem Intelijen Potensi Pendapatan Daerah (PAD) Kota Bandar Lampung — Pengawasan Inventaris Reklame, Kualitas Data, dan Verifikasi Lapangan (Akademik MVP).">
+  
+  <!-- Font Google Inter & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <!-- Leaflet CSS untuk Peta Interaktif -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Stylesheet Utama -->
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    
+    <!-- SIDEBAR KIRI TETAP -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <span class="material-symbols-outlined" style="font-size: 22px;">query_stats</span>
+        </div>
+        <div>
+          <div class="brand-title">PAD Intelligence</div>
+          <div class="brand-subtitle">BAPENDA Kota Bandar Lampung</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Menu Utama</div>
+        <a href="#dashboard" class="nav-link active" data-view="dashboard" id="nav-dashboard">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="#impor" class="nav-link" data-view="impor" id="nav-impor">
+          <span class="material-symbols-outlined">upload_file</span>
+          <span>Impor Data</span>
+        </a>
+        <a href="#inventaris" class="nav-link" data-view="inventaris" id="nav-inventaris">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span>Inventaris Reklame</span>
+        </a>
+        <a href="#peta" class="nav-link" data-view="peta" id="nav-peta">
+          <span class="material-symbols-outlined">map</span>
+          <span>Peta Reklame</span>
+        </a>
+
+        <div class="nav-section-title">Analitik & Tata Kelola</div>
+        <a href="#temuan" class="nav-link" data-view="temuan" id="nav-temuan">
+          <span class="material-symbols-outlined">policy</span>
+          <span>Temuan Anomali</span>
+          <span class="nav-badge-count hidden" id="sidebar-findings-count">0</span>
+        </a>
+        <a href="#prioritas" class="nav-link" data-view="prioritas" id="nav-prioritas">
+          <span class="material-symbols-outlined">priority_high</span>
+          <span>Prioritas Periksa</span>
+          <span class="nav-badge-count hidden" id="sidebar-priority-count">0</span>
+        </a>
+        <a href="#verifikasi" class="nav-link" data-view="verifikasi" id="nav-verifikasi">
+          <span class="material-symbols-outlined">fact_check</span>
+          <span>Verifikasi</span>
+        </a>
+        <a href="#laporan" class="nav-link" data-view="laporan" id="nav-laporan">
+          <span class="material-symbols-outlined">summarize</span>
+          <span>Laporan & Ekspor</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm w-full" id="btn-open-about" style="justify-content: flex-start;">
+          <span class="material-symbols-outlined text-sm">info</span>
+          Tentang Prototipe
+        </button>
+        <div class="app-version-chip mt-2">
+          <span>Versi Sistem</span>
+          <span class="font-semibold text-primary">v0.9.4-lite</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- HEADER ATAS TETAP -->
+    <header class="app-header">
+      <div class="header-left">
+        <button class="mobile-menu-btn" id="mobile-toggle-btn" aria-label="Buka Menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="badge badge-simulasi" title="Sistem ini menggunakan data simulasi untuk keperluan prototipe akademik">
+          <span class="material-symbols-outlined text-sm">science</span>
+          DATA SIMULASI
+        </div>
+        <div class="header-dataset-chip">
+          <span class="text-outline">Dataset:</span>
+          <span class="font-semibold text-primary" id="header-dataset-name">Memuat...</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="btn btn-secondary btn-sm" id="btn-reset-demo" title="Kembalikan seluruh data dan verifikasi ke kondisi awal demo">
+          <span class="material-symbols-outlined text-sm">refresh</span>
+          Reset Data Demo
+        </button>
+        <div class="user-demo-chip">
+          <span class="material-symbols-outlined text-sm text-secondary">account_circle</span>
+          <span>Analis BAPENDA (Demo)</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- KONTEN UTAMA (SPA VIEW CONTAINER) -->
+    <main class="app-main">
+      
+      <!-- BANNER PERINGATAN GLOBAL SIMULASI -->
+      <div class="banner-simulation">
+        <span class="material-symbols-outlined">shield_with_heart</span>
+        <div>
+          <div class="banner-text-title">Pemberitahuan Integritas Data & Kepatuhan Tata Kelola</div>
+          <div class="banner-text-desc">
+            Sistem ini adalah prototipe analitis berbasis data sintetis Kota Bandar Lampung. 
+            <strong>Temuan anomali otomatis adalah indikator untuk ditinjau oleh analis, BUKAN penetapan pelanggaran pajak atau klaim kebocoran PAD resmi.</strong> 
+            Nilai penerimaan aktual tidak tersedia tanpa integrasi resmi sistem Pemkot.
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           VIEW 1: DASHBOARD
+           ========================================================================= -->
+      <section id="view-dashboard" class="page-view">
+        <div class="page-header-container">
+          <div>
+            <h1 class="page-title">Dashboard Pengawasan Reklame</h1>
+            <p class="page-subtitle">Wilayah Kota Bandar Lampung — Ringkasan Inventaris, Kualitas Atribut, dan Progres Peninjauan</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-secondary" onclick="window.app.navigate('impor')">
+              <span class="material-symbols-outlined">upload_file</span>
+              Impor Dataset
+            </button>
+            <button class="btn btn-primary" onclick="window.app.navigate('laporan')">
+              <span class="material-symbols-outlined">download</span>
+              Laporan Komprehensif
+            </button>
+          </div>
+        </div>
+
+        <!-- 6 KPI Metrics Cards -->
+        <div class="kpi-grid">
+          <!-- KPI 1: Total Objek -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Total Objek</span>
+              <div class="kpi-icon-wrapper"><span class="material-symbols-outlined">ad_units</span></div>
+            </div>
+            <div class="kpi-value data-tabular" id="kpi-total-objects">0</div>
+            <div class="kpi-desc">Unit reklame aktif</div>
+          </div>
+
+          <!-- KPI 2: Kelengkapan Atribut -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Kelengkapan</span>
+              <div class="kpi-icon-wrapper"><span class="material-symbols-outlined">checklist</span></div>
+            </div>
+            <div class="kpi-value data-tabular" id="kpi-completeness">0%</div>
+            <div class="kpi-desc">Kualitas kolom wajib</div>
+            <div class="kpi-progress-bar"><div class="kpi-progress-fill" id="kpi-completeness-bar" style="width: 0%;"></div></div>
+          </div>
+
+          <!-- KPI 3: Total Temuan -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Total Temuan</span>
+              <div class="kpi-icon-wrapper" style="background-color: var(--color-error-container); color: var(--color-error);"><span class="material-symbols-outlined">report_problem</span></div>
+            </div>
+            <div class="kpi-value data-tabular text-error" id="kpi-total-findings">0</div>
+            <div class="kpi-desc">Indikator anomali aturan</div>
+          </div>
+
+          <!-- KPI 4: Perlu Ditinjau -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Perlu Ditinjau</span>
+              <div class="kpi-icon-wrapper" style="background-color: var(--color-warning-container); color: var(--color-warning);"><span class="material-symbols-outlined">pending_actions</span></div>
+            </div>
+            <div class="kpi-value data-tabular text-warning" id="kpi-need-review">0</div>
+            <div class="kpi-desc">Objek belum selesai ditinjau</div>
+          </div>
+
+          <!-- KPI 5: Progres Verifikasi -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Progres Verifikasi</span>
+              <div class="kpi-icon-wrapper" style="background-color: var(--color-success-container); color: var(--color-success);"><span class="material-symbols-outlined">task_alt</span></div>
+            </div>
+            <div class="kpi-value data-tabular text-success" id="kpi-verif-progress">0%</div>
+            <div class="kpi-desc" id="kpi-verif-count">0 dari 0 selesai</div>
+            <div class="kpi-progress-bar"><div class="kpi-progress-fill" id="kpi-verif-bar" style="width: 0%; background-color: var(--color-success);"></div></div>
+          </div>
+
+          <!-- KPI 6: Koordinat Valid -->
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-label">Koordinat Valid</span>
+              <div class="kpi-icon-wrapper"><span class="material-symbols-outlined">pin_drop</span></div>
+            </div>
+            <div class="kpi-value data-tabular" id="kpi-valid-coords">0%</div>
+            <div class="kpi-desc" id="kpi-coords-count">0 terpetakan di BDL</div>
+          </div>
+        </div>
+
+        <!-- Analisis 2 Kolom -->
+        <div class="dashboard-grid-2col">
+          <!-- Kolom Utama (Kiri) -->
+          <div class="flex flex-col gap-6">
+            <!-- Card: Distribusi Temuan Aturan -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="material-symbols-outlined text-secondary">bar_chart</span>
+                  Distribusi Temuan Berdasarkan Aturan
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="window.app.navigate('temuan')">
+                  Lihat Semua Temuan
+                </button>
+              </div>
+              <div id="chart-rule-distribution">
+                <!-- SVG Bars injected here -->
+              </div>
+            </div>
+
+            <!-- Card: Prioritas Teratas -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="material-symbols-outlined text-error">priority_high</span>
+                  Daftar Prioritas Pemeriksaan Teratas
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="window.app.navigate('prioritas')">
+                  Lihat Semua Antrean
+                </button>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>ID & Nama Objek</th>
+                      <th>Wilayah</th>
+                      <th>Prioritas</th>
+                      <th>Alasan Anomali</th>
+                      <th>Status Verifikasi</th>
+                      <th style="text-align: right;">Aksi Cepat</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-priority-table-body">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kolom Samping (Kanan) -->
+          <div class="flex flex-col gap-6">
+            <!-- Card: Status Verifikasi Manusia -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="material-symbols-outlined text-secondary">pie_chart</span>
+                  Status Verifikasi Manusia
+                </div>
+              </div>
+              <div id="chart-verification-donut">
+                <!-- Donut Chart injected here -->
+              </div>
+            </div>
+
+            <!-- Card: Metadata Dataset Aktif -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="material-symbols-outlined text-secondary">dataset</span>
+                  Konteks Dataset & Audit
+                </div>
+              </div>
+              <div class="flex flex-col gap-3 text-xs">
+                <div class="flex justify-between border-b pb-2">
+                  <span class="text-outline">ID Dataset:</span>
+                  <span class="font-semibold data-tabular" id="dash-meta-id">-</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                  <span class="text-outline">Nama File:</span>
+                  <span class="font-medium" id="dash-meta-file">-</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                  <span class="text-outline">Waktu Analisis:</span>
+                  <span class="font-medium" id="dash-meta-time">-</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                  <span class="text-outline">Versi Aturan:</span>
+                  <span class="badge badge-neutral">v2.0-analitis (Deterministik)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-outline">Penerimaan Aktual:</span>
+                  <span class="text-outline italic">Tidak tersedia</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card: Petunjuk Langkah Selanjutnya -->
+            <div class="card" style="background-color: var(--color-surface-low);">
+              <div class="card-title text-sm mb-2">
+                <span class="material-symbols-outlined text-sm text-secondary">tips_and_updates</span>
+                Langkah Pemeriksaan Disarankan
+              </div>
+              <ul class="text-xs text-on-surface-variant flex flex-col gap-2 pl-4" style="list-style-type: disc;">
+                <li>Periksa <strong>ID Duplikat</strong> dan <strong>ID Kosong</strong> di menu Prioritas Pemeriksaan.</li>
+                <li>Lakukan verifikasi lapangan untuk objek reklame dengan kandidat duplikat.</li>
+                <li>Lengkapi koordinat titik reklame melalui tinjauan Inventaris & Peta.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 2: IMPOR DATA
+           ========================================================================= -->
+      <section id="view-impor" class="page-view hidden">
+        <div class="page-header-container">
+          <div>
+            <h1 class="page-title">Impor & Validasi Dataset Reklame</h1>
+            <p class="page-subtitle">Unggah file CSV baru atau gunakan preset simulasi demo untuk menguji validasi struktur.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid-2col">
+          <!-- Kolom Unggah File -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="material-symbols-outlined text-secondary">cloud_upload</span>
+                Unggah File CSV Baru
+              </div>
+            </div>
+            
+            <div class="import-dropzone" id="csv-dropzone">
+              <span class="material-symbols-outlined dropzone-icon">upload_file</span>
+              <h4 class="text-base font-semibold text-primary mt-3">Tarik & Lepas File CSV ke Sini</h4>
+              <p class="text-xs text-outline mt-1 mb-4">atau klik untuk memilih file dari komputer Anda</p>
+              <input type="file" id="csv-file-input" accept=".csv" class="hidden">
+              <button class="btn btn-secondary btn-sm" onclick="document.getElementById('csv-file-input').click()">
+                <span class="material-symbols-outlined text-sm">folder_open</span>
+                Pilih File CSV
+              </button>
+            </div>
+
+            <div class="mt-4 p-3 bg-surface-low rounded text-xs text-outline border border-outline-variant">
+              <div class="font-semibold text-on-surface mb-1">Skema Kolom Wajib CSV:</div>
+              <code class="data-tabular text-[11px] block overflow-x-auto text-primary">
+                object_id, object_name, area, reklame_type, size, size_unit, recorded_at, administrative_status, verification_status, latitude, longitude
+              </code>
+            </div>
+          </div>
+
+          <!-- Kolom Preset Demo & Template -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="material-symbols-outlined text-secondary">tune</span>
+                Preset Dataset Demo Terkendali
+              </div>
+            </div>
+            <p class="text-xs text-outline mb-4">Pilih salah satu dataset uji terkontrol untuk mendemonstrasikan kasus penggunaan sesuai PRD:</p>
+
+            <div class="flex flex-col gap-3">
+              <!-- Preset 1 -->
+              <div class="p-3 border rounded-md flex items-center justify-between hover:bg-surface-low transition">
+                <div>
+                  <div class="font-semibold text-sm text-primary">Preset 1: Dataset Aktif Demo</div>
+                  <div class="text-xs text-outline">32 objek reklame BDL dengan kombinasi anomali realistis.</div>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="window.app.loadPreset('aktif')">
+                  Muat
+                </button>
+              </div>
+
+              <!-- Preset 2 -->
+              <div class="p-3 border rounded-md flex items-center justify-between hover:bg-surface-low transition">
+                <div>
+                  <div class="font-semibold text-sm text-primary">Preset 2: Dataset Bersih (Benchmark)</div>
+                  <div class="text-xs text-outline">18 objek 100% valid tanpa anomali struktural atau koordinat.</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="window.app.loadPreset('bersih')">
+                  Muat
+                </button>
+              </div>
+
+              <!-- Preset 3 -->
+              <div class="p-3 border rounded-md flex items-center justify-between hover:bg-surface-low transition">
+                <div>
+                  <div class="font-semibold text-sm text-primary">Preset 3: Uji Anomali & Beban (Stress Test)</div>
+                  <div class="text-xs text-outline">25 objek dengan ID kosong, duplikat, dan koordinat invalid.</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="window.app.loadPreset('stress')">
+                  Muat
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t flex items-center justify-between">
+              <span class="text-xs text-outline">Ingin mencoba file CSV mandiri?</span>
+              <a href="/data/dataset-aktif.csv" download="template-reklame-bdl.csv" class="btn btn-outline btn-sm">
+                <span class="material-symbols-outlined text-sm">download</span>
+                Unduh Template CSV
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTAINER HASIL VALIDASI IMPOR (Tampil setelah file dipilih) -->
+        <div id="import-validation-section" class="card mt-6 hidden">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                <span class="material-symbols-outlined text-secondary">rule</span>
+                Hasil Validasi Struktur File: <span id="import-filename-preview" class="font-normal text-on-surface"></span>
+              </div>
+              <p class="text-xs text-outline mt-1">Tinjau ringkasan validasi baris sebelum memutuskan untuk mengaktifkan dataset.</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-outline btn-sm" id="btn-cancel-import">Batal</button>
+              <button class="btn btn-primary btn-sm" id="btn-confirm-activate-import">
+                <span class="material-symbols-outlined text-sm">check_circle</span>
+                Konfirmasi & Aktifkan Dataset
+              </button>
+            </div>
+          </div>
+
+          <!-- Metrik Validasi 4 Kotak -->
+          <div class="grid grid-cols-4 gap-4 mb-4" style="display: grid; grid-template-columns: repeat(4, 1fr);">
+            <div class="p-3 bg-surface-low rounded border border-outline-variant">
+              <div class="text-xs text-outline">Total Baris Terbaca</div>
+              <div class="text-xl font-bold data-tabular" id="val-total-rows">0</div>
+            </div>
+            <div class="p-3 bg-emerald-50 rounded border border-emerald-200">
+              <div class="text-xs text-emerald-800">Baris Valid Bersih</div>
+              <div class="text-xl font-bold text-emerald-700 data-tabular" id="val-accepted-rows">0</div>
+            </div>
+            <div class="p-3 bg-amber-50 rounded border border-amber-200">
+              <div class="text-xs text-amber-800">Perlu Ditinjau (Anomali)</div>
+              <div class="text-xl font-bold text-amber-700 data-tabular" id="val-review-rows">0</div>
+            </div>
+            <div class="p-3 bg-red-50 rounded border border-red-200">
+              <div class="text-xs text-red-800">Baris Rusak / Ditolak</div>
+              <div class="text-xl font-bold text-red-700 data-tabular" id="val-rejected-rows">0</div>
+            </div>
+          </div>
+
+          <!-- Alert jika ada error kritis header -->
+          <div id="val-critical-error-box" class="p-3 bg-red-100 text-red-900 border border-red-300 rounded text-xs mb-4 hidden">
+            <!-- Injected message -->
+          </div>
+
+          <!-- Preview Baris Data -->
+          <div class="card-title text-sm mb-2">Pratinjau Sampel Baris Terbaca</div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Status Baris</th>
+                  <th>ID Objek</th>
+                  <th>Nama Reklame</th>
+                  <th>Wilayah</th>
+                  <th>Tipe</th>
+                  <th>Ukuran</th>
+                  <th>Catatan Validasi</th>
+                </tr>
+              </thead>
+              <tbody id="import-preview-table-body">
+                <!-- Preview rows injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Riwayat Impor Terdahulu -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="material-symbols-outlined text-secondary">history</span>
+              Riwayat Dataset yang Tersimpan di Browser
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID Dataset</th>
+                  <th>Label Dataset</th>
+                  <th>File Sumber</th>
+                  <th>Waktu Impor</th>
+                  <th>Total Objek</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="saved-datasets-table-body">
+                <!-- Injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 3: INVENTARIS REKLAME
+           ========================================================================= -->
+      <section id="view-inventaris" class="page-view hidden">
+        <div class="page-header-container">
+          <div>
+            <h1 class="page-title">Inventaris Reklame Kota Bandar Lampung</h1>
+            <p class="page-subtitle">Daftar lengkap objek reklame aktif, kelengkapan atribut sumber, dan status pemeriksaan.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-outline" onclick="window.Exporter.exportInventory()">
+              <span class="material-symbols-outlined">download</span>
+              Ekspor CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="filter-toolbar">
+          <div class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="inv-search" placeholder="Cari ID Objek, Nama, atau Lokasi...">
+          </div>
+          <select class="filter-select" id="inv-filter-area">
+            <option value="">Semua Wilayah (Kecamatan)</option>
+            <option value="Tanjung Karang Pusat">Tanjung Karang Pusat</option>
+            <option value="Kedaton">Kedaton</option>
+            <option value="Way Halim">Way Halim</option>
+            <option value="Teluk Betung Selatan">Teluk Betung Selatan</option>
+            <option value="Sukarame">Sukarame</option>
+            <option value="Rajabasa">Rajabasa</option>
+            <option value="Kemiling">Kemiling</option>
+          </select>
+          <select class="filter-select" id="inv-filter-type">
+            <option value="">Semua Jenis Reklame</option>
+            <option value="Billboard">Billboard</option>
+            <option value="Videotron">Videotron</option>
+            <option value="Baliho">Baliho</option>
+            <option value="Bando Jalan">Bando Jalan</option>
+            <option value="Neon Box">Neon Box</option>
+            <option value="Shopfront Signage">Shopfront Signage</option>
+          </select>
+          <select class="filter-select" id="inv-filter-status">
+            <option value="">Semua Status Verifikasi</option>
+            <option value="belum_diperiksa">Belum Diperiksa</option>
+            <option value="sedang_diperiksa">Sedang Diperiksa</option>
+            <option value="terkonfirmasi_masalah">Terkonfirmasi Masalah</option>
+            <option value="tidak_terbukti">Tidak Terbukti</option>
+          </select>
+          <button class="btn btn-outline btn-sm" id="inv-btn-reset-filter" title="Reset filter">
+            <span class="material-symbols-outlined text-sm">filter_alt_off</span>
+            Reset
+          </button>
+        </div>
+
+        <!-- Hasil Pencarian Counter -->
+        <div class="flex items-center justify-between mb-3 text-xs text-outline">
+          <div>Menampilkan <strong id="inv-showing-count" class="text-on-surface">0</strong> dari <strong id="inv-total-count" class="text-on-surface">0</strong> objek</div>
+        </div>
+
+        <!-- Tabel Inventaris -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID Objek</th>
+                <th>Nama Objek Reklame</th>
+                <th>Wilayah / Kecamatan</th>
+                <th>Jenis</th>
+                <th>Ukuran</th>
+                <th>Status Administrasi</th>
+                <th>Status Verifikasi</th>
+                <th>Koordinat</th>
+                <th>Temuan</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table-body">
+              <!-- Injected dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State Container jika filter kosong -->
+        <div id="inv-empty-state" class="empty-state hidden">
+          <span class="material-symbols-outlined empty-state-icon">search_off</span>
+          <div class="empty-state-title">Tidak Ada Objek yang Sesuai Filter</div>
+          <div class="empty-state-desc">Cobalah menyesuaikan kata kunci pencarian atau bersihkan filter wilayah dan status.</div>
+          <button class="btn btn-secondary btn-sm" onclick="window.app.resetInventoryFilters()">Reset Semua Filter</button>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 4: PETA REKLAME
+           ========================================================================= -->
+      <section id="view-peta" class="page-view hidden">
+        <div class="page-header-container">
+          <div>
+            <h1 class="page-title">Peta Sebaran Titik Reklame</h1>
+            <p class="page-subtitle">Hanya memetakan titik reklame dengan koordinat valid di wilayah Kota Bandar Lampung.</p>
+          </div>
+        </div>
+
+        <!-- Map Filter Toolbar -->
+        <div class="filter-toolbar">
+          <select class="filter-select" id="map-filter-area">
+            <option value="">Semua Wilayah</option>
+            <option value="Tanjung Karang Pusat">Tanjung Karang Pusat</option>
+            <option value="Kedaton">Kedaton</option>
+            <option value="Way Halim">Way Halim</option>
+            <option value="Teluk Betung Selatan">Teluk Betung Selatan</option>
+            <option value="Sukarame">Sukarame</option>
+            <option value="Rajabasa">Rajabasa</option>
+            <option value="Kemiling">Kemiling</option>
+          </select>
+          <select class="filter-select" id="map-filter-priority">
+            <option value="">Semua Kategori Prioritas</option>
+            <option value="Tinggi">Prioritas Tinggi</option>
+            <option value="Sedang">Prioritas Sedang</option>
+            <option value="Perlu Ditinjau">Perlu Ditinjau</option>
+            <option value="Tanpa Masalah">Tanpa Masalah</option>
+          </select>
+          <button class="btn btn-outline btn-sm" id="map-btn-reset-filter">
+            <span class="material-symbols-outlined text-sm">filter_alt_off</span>
+            Reset Filter
+          </button>
+        </div>
+
+        <!-- Banner Tile Failure jika peta offline / koneksi OpenStreetMap terhambat -->
+        <div id="map-tile-warning-banner" class="banner-simulation hidden">
+          <span class="material-symbols-outlined">wifi_off</span>
+          <div>
+            <div class="banner-text-title">Pemberitahuan Koneksi Tile Peta</div>
+            <div class="banner-text-desc">Tile peta eksternal lambat atau tidak dapat dimuat. Penanda titik dan daftar objek tetap beroperasi penuh.</div>
+          </div>
+        </div>
+
+        <!-- 2 Kolom Peta & Panel Objek Tanpa Koordinat -->
+        <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 20px;">
+          <!-- Map Canvas -->
+          <div class="map-view-container" id="leaflet-map-container">
+            <!-- Leaflet initializes here -->
+          </div>
+
+          <!-- Samping: Objek Tanpa Koordinat (FR-04 Compliance) -->
+          <div class="card flex flex-col" style="max-height: 540px;">
+            <div class="card-header pb-2 border-b">
+              <div>
+                <div class="card-title text-sm">
+                  <span class="material-symbols-outlined text-error text-sm">location_off</span>
+                  Objek Tanpa Koordinat
+                </div>
+                <div class="text-[11px] text-outline mt-0.5">
+                  <span id="map-unmapped-count">0</span> objek tidak dipetakan
+                </div>
+              </div>
+            </div>
+            <div class="text-xs text-outline py-2">
+              Objek di bawah tidak memiliki titik koordinat valid sehingga <strong>tidak diberi penanda buatan</strong>. Klik untuk membuka detail:
+            </div>
+            <div class="flex-1 overflow-y-auto flex flex-col gap-1.5" id="map-unmapped-list">
+              <!-- Injected unmapped items -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 5: TEMUAN ANOMALI
+           ========================================================================= -->
+      <section id="view-temuan" class="page-view hidden">
+        <div class="page-header-container">
+          <div>
+            <h1 class="page-title">Temuan Anomali & Kualitas Data</h1>
+            <p class="page-subtitle">Daftar catatan inventaris yang memicu aturan analitis transparan untuk ditinjau oleh analis.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-outline" onclick="window.Exporter.exportFindings()">
+              <span class="material-symbols-outlined">download</span>
+              Ekspor Temuan (CSV)
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Metric Cards -->
+        <div class="grid grid-cols-4 gap-4 mb-4" style="display: grid; grid-template-columns: repeat(4, 1fr);">
+          <div class="kpi-card">
+            <span class="kpi-label">Total Temuan</span>
+            <div class="kpi-value text-primary data-tabular" id="findings-total-stat">0</div>
+            <div class="kpi-desc">Indikator terdeteksi</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Masalah Struktur</span>
+            <div class="kpi-value text-error data-tabular" id="findings-struct-stat">0</div>
+            <div class="kpi-desc">RULE-01 & RULE-02</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Kualitas Atribut</span>
+            <div class="kpi-value text-warning data-tabular" id="findings-attr-stat">0</div>
+            <div class="kpi-desc">RULE-03 & RULE-06</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Koordinat & Admin</span>
+            <div class="kpi-value text-outline data-tabular" id="findings-coord-stat">0</div>
+            <div class="kpi-desc">RULE-05 & RULE-07</div>
+          </div>
+        </div>
+
+        <!-- Filter Toolbar -->
+        <div class="filter-toolbar">
+          <select class="filter-select" id="findings-filter-rule">
+            <option value="">Semua Aturan (RULE-01 s/d 07)</option>
+            <option value="RULE-01">RULE-01: ID Objek Kosong</option>
+            <option value="RULE-02">RULE-02: ID Objek Duplikat</option>
+            <option value="RULE-03">RULE-03: Kolom Wajib Kosong</option>
+            <option value="RULE-04">RULE-04: Kandidat Duplikat</option>
+            <option value="RULE-05">RULE-05: Koordinat Tidak Valid</option>
+            <option value="RULE-06">RULE-06: Ukuran Tidak Valid</option>
+            <option value="RULE-07">RULE-07: Status Non-Standar</option>
+          </select>
+          <select class="filter-select" id="findings-filter-priority">
+            <option value="">Semua Kategori</option>
+            <option value="Tinggi">Tinggi</option>
+            <option value="Sedang">Sedang</option>
+            <option value="Perlu Ditinjau">Perlu Ditinjau</option>
+          </select>
+          <select class="filter-select" id="findings-filter-status">
+            <option value="">Semua Status Review</option>
+            <option value="belum_ditinjau">Belum Ditinjau</option>
+            <option value="sedang_ditinjau">Sedang Ditinjau</option>
+            <option value="terbukti">Terkonfirmasi Masalah</option>
+            <option value="tidak_terbukti">Tidak Terbukti</option>
+          </select>
+          <button class="btn btn-outline btn-sm" id="findings-btn-reset-filter">
+            <span class="material-symbols-outlined text-sm">filter_alt_off</span>
+            Reset
+          </button>
+        </div>
+
+        <!-- Tabel Temuan Anomali -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID Temuan</th>
+                <th>Objek Terkait</th>
+                <th>Kode Aturan</th>
+                <th>Kategori</th>
+                <th>Alasan Teknis Temuan</th>
+                <th>Atribut Pemicu</th>
+                <th>Status Peninjauan</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="findings-table-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 6: PRIORITAS PEMERIKSAAN
+           ========================================================================= -->
+      <section id="view-prioritas" class="page-view hidden">
+        <div class="page-header-container">
+          <div>
+            <h1 class="page-title">Prioritas Pemeriksaan Objek Reklame</h1>
+            <p class="page-subtitle">Daftar objek diurutkan secara deterministik untuk membantu analis merencanakan verifikasi lapangan.</p>
+          </div>
+        </div>
+
+        <!-- Panel Penjelasan Logika Deterministik Sesuai PRD Bagian 9 -->
+        <div class="card mb-4" style="background-color: var(--color-surface-low);">
+          <div class="card-title text-sm mb-1">
+            <span class="material-symbols-outlined text-sm text-secondary">info</span>
+            Dasar Logika Prioritas Deterministik (PRD Bab 9)
+          </div>
+          <p class="text-xs text-on-surface-variant leading-relaxed">
+            Urutan antrean peninjauan diturunkan secara transparan tanpa klaim bobot risiko resmi:
+            <br>
+            <strong>1. Kategori Prioritas:</strong> 
+            <span class="badge badge-high text-[10px]">Tinggi</span> (Masalah struktur: ID kosong / ID duplikat / ≥3 anomali) &gt; 
+            <span class="badge badge-medium text-[10px]">Sedang</span> (Kualitas atribut esensial / kandidat duplikat) &gt; 
+            <span class="badge badge-review text-[10px]">Perlu Ditinjau</span> (Koordinat belum ada / status administrasi kosong).
+            <br>
+            <strong>2. Deterministik Seri:</strong> Jika dua objek memiliki kategori sama, diurutkan berdasarkan <em>jumlah aturan pemicu terbanyak</em>, lalu <em>ID objek alfabetis</em>.
+          </p>
+        </div>
+
+        <!-- 4 Kotak Metrik Antrean -->
+        <div class="grid grid-cols-4 gap-4 mb-4" style="display: grid; grid-template-columns: repeat(4, 1fr);">
+          <div class="kpi-card">
+            <span class="kpi-label">Total Antrean</span>
+            <div class="kpi-value text-primary data-tabular" id="prio-total-count">0</div>
+            <div class="kpi-desc">Objek memerlukan tindakan</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Prioritas Tinggi</span>
+            <div class="kpi-value text-error data-tabular" id="prio-high-count">0</div>
+            <div class="kpi-desc">Kritis struktur data</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Prioritas Sedang</span>
+            <div class="kpi-value text-warning data-tabular" id="prio-med-count">0</div>
+            <div class="kpi-desc">Atribut esensial & kandidat</div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Perlu Ditinjau</span>
+            <div class="kpi-value text-info data-tabular" id="prio-rev-count">0</div>
+            <div class="kpi-desc">Koordinat & status izin</div>
+          </div>
+        </div>
+
+        <!-- Filter Toolbar -->
+        <div class="filter-toolbar">
+          <select class="filter-select" id="prio-filter-category">
+            <option value="">Semua Kategori Prioritas</option>
+            <option value="Tinggi">Prioritas Tinggi</option>
+            <option value="Sedang">Prioritas Sedang</option>
+            <option value="Perlu Ditinjau">Perlu Ditinjau</option>
+          </select>
+          <select class="filter-select" id="prio-filter-verif">
+            <option value="">Semua Status Verifikasi</option>
+            <option value="belum_diperiksa">Belum Diperiksa</option>
+            <option value="sedang_diperiksa">Sedang Diperiksa</option>
+            <option value="terkonfirmasi_masalah">Terkonfirmasi Masalah</option>
+            <option value="tidak_terbukti">Tidak Terbukti</option>
+          </select>
+          <button class="btn btn-outline btn-sm" id="prio-btn-reset-filter">
+            <span class="material-symbols-outlined text-sm">filter_alt_off</span>
+            Reset
+          </button>
+        </div>
+
+        <!-- Tabel Prioritas -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">No</th>
+                <th>ID & Objek Reklame</th>
+                <th>Wilayah</th>
+                <th>Prioritas</th>
+                <th>Alasan Prioritas</th>
+                <th>Jumlah Pemicu</th>
+                <th>Status Verifikasi</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="priority-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 7: VERIFIKASI & TINDAK LANJUT
+           ========================================================================= -->
+      <section id="view-verifikasi" class="page-view hidden">
+        <div class="page-header-container">
+          <div>
+            <h1 class="page-title">Verifikasi & Tindak Lanjut Petugas</h1>
+            <p class="page-subtitle">Pencatatan hasil pemeriksaan verifikator manusia dengan riwayat append-only yang tidak dapat dimanipulasi.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-outline" onclick="window.Exporter.exportVerificationLog()">
+              <span class="material-symbols-outlined">download</span>
+              Ekspor Log Verifikasi (CSV)
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Card -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="material-symbols-outlined text-success">verified_user</span>
+              Progres Verifikasi Objek Aktif
+            </div>
+            <span class="font-bold text-lg text-primary data-tabular" id="verif-summary-percent">0%</span>
+          </div>
+          <div class="kpi-progress-bar" style="height: 8px;">
+            <div class="kpi-progress-fill" id="verif-summary-bar" style="width: 0%; background-color: var(--color-success);"></div>
+          </div>
+          <div class="flex items-center justify-between text-xs text-outline mt-3">
+            <div>Diselesaikan: <strong id="verif-done-count" class="text-on-surface">0</strong> objek</div>
+            <div>Sedang Berjalan: <strong id="verif-active-count" class="text-on-surface">0</strong> objek</div>
+            <div>Belum Diperiksa: <strong id="verif-pending-count" class="text-on-surface">0</strong> objek</div>
+          </div>
+        </div>
+
+        <!-- Log Riwayat Verifikasi Terkini -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="material-symbols-outlined text-secondary">manage_history</span>
+              Riwayat Audit Pemeriksaan Lapangan (Append-Only Log)
+            </div>
+          </div>
+          <p class="text-xs text-outline mb-3">Setiap perubahan status dan catatan verifikasi dicatat secara permanen bersama waktu pemeriksaan dan identitas petugas demo.</p>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Waktu (WIB)</th>
+                  <th>ID Objek</th>
+                  <th>Status Sebelumnya</th>
+                  <th>Status Baru</th>
+                  <th>Catatan Petugas</th>
+                  <th>Petugas</th>
+                </tr>
+              </thead>
+              <tbody id="verification-log-table-body">
+                <!-- Log rows injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 8: LAPORAN & EKSPOR
+           ========================================================================= -->
+      <section id="view-laporan" class="page-view hidden">
+        <div class="page-header-container">
+          <div>
+            <h1 class="page-title">Laporan Analitis & Ekspor Data</h1>
+            <p class="page-subtitle">Hasilkan laporan terstruktur untuk kebutuhan evaluasi BAPENDA Kota Bandar Lampung.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary" onclick="window.print()">
+              <span class="material-symbols-outlined">print</span>
+              Cetak / PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Kartu Pilihan Ekspor CSV -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="material-symbols-outlined text-secondary">file_download</span>
+              Paket Ekspor File CSV (Dengan Header DATA SIMULASI)
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4" style="display: grid; grid-template-columns: repeat(3, 1fr);">
+            <div class="p-4 border rounded-md flex flex-col justify-between bg-surface-low">
+              <div>
+                <div class="font-bold text-sm text-primary">Inventaris Reklame</div>
+                <div class="text-xs text-outline mt-1">Seluruh data objek reklame beserta koordinat dan status perizinan aktif.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm mt-4 w-full" onclick="window.Exporter.exportInventory()">
+                <span class="material-symbols-outlined text-sm">download</span> Unduh CSV
+              </button>
+            </div>
+
+            <div class="p-4 border rounded-md flex flex-col justify-between bg-surface-low">
+              <div>
+                <div class="font-bold text-sm text-primary">Temuan Anomali</div>
+                <div class="text-xs text-outline mt-1">Daftar temuan aturan analitis, alasan teknis, dan atribut pemicu.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm mt-4 w-full" onclick="window.Exporter.exportFindings()">
+                <span class="material-symbols-outlined text-sm">download</span> Unduh CSV
+              </button>
+            </div>
+
+            <div class="p-4 border rounded-md flex flex-col justify-between bg-surface-low">
+              <div>
+                <div class="font-bold text-sm text-primary">Log Audit Verifikasi</div>
+                <div class="text-xs text-outline mt-1">Riwayat kronologis hasil pemeriksaan lapangan oleh verifikator manusia.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm mt-4 w-full" onclick="window.Exporter.exportVerificationLog()">
+                <span class="material-symbols-outlined text-sm">download</span> Unduh CSV
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ringkasan Eksekutif Terstruktur untuk Ditinjau / Dicetak -->
+        <div class="card">
+          <div class="card-header border-b pb-3">
+            <div>
+              <div class="card-title">Ringkasan Eksekutif Kualitas Data Reklame Kota Bandar Lampung</div>
+              <div class="text-xs text-outline mt-1">Dokumen Evaluasi Analitis Internal BAPENDA — Status: DATA SIMULASI</div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="window.Exporter.exportExecutiveSummary()">
+              <span class="material-symbols-outlined text-sm">download</span>
+              Ekspor Ringkasan (CSV)
+            </button>
+          </div>
+
+          <div class="py-4 flex flex-col gap-4 text-xs">
+            <div class="grid grid-cols-2 gap-4" style="display: grid; grid-template-columns: 1fr 1fr;">
+              <div class="p-3 bg-surface-low rounded border">
+                <div class="font-semibold text-primary mb-2">Parameter Dataset Aktif</div>
+                <div class="flex justify-between py-1 border-b"><span>Dataset ID:</span> <span id="rep-dataset-id" class="data-tabular font-medium">-</span></div>
+                <div class="flex justify-between py-1 border-b"><span>Total Objek Terdata:</span> <span id="rep-total-objects" class="data-tabular font-medium">0</span></div>
+                <div class="flex justify-between py-1 border-b"><span>Kelengkapan Kolom Wajib:</span> <span id="rep-completeness" class="data-tabular font-medium">0%</span></div>
+                <div class="flex justify-between py-1"><span>Objek Berkoordinat Valid:</span> <span id="rep-valid-coords" class="data-tabular font-medium">0</span></div>
+              </div>
+
+              <div class="p-3 bg-surface-low rounded border">
+                <div class="font-semibold text-primary mb-2">Rekapitulasi Temuan & Verifikasi</div>
+                <div class="flex justify-between py-1 border-b"><span>Total Indikator Temuan:</span> <span id="rep-total-findings" class="data-tabular font-medium text-error">0</span></div>
+                <div class="flex justify-between py-1 border-b"><span>Prioritas Tinggi:</span> <span id="rep-high-findings" class="data-tabular font-medium text-error">0</span></div>
+                <div class="flex justify-between py-1 border-b"><span>Objek Telah Diverifikasi:</span> <span id="rep-verified-count" class="data-tabular font-medium text-success">0</span></div>
+                <div class="flex justify-between py-1"><span>Progres Verifikasi:</span> <span id="rep-verif-progress" class="data-tabular font-medium text-success">0%</span></div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded text-amber-900 leading-relaxed">
+              <strong>Catatan Integritas Pajak Daerah:</strong>
+              Nilai potensi PAD reklame pada prototipe ini dihitung secara estimasi analitis demonstratif dan tidak mewakili penetapan Surat Ketetapan Pajak Daerah (SKPD) resmi. Seluruh objek dengan status terkonfirmasi masalah memerlukan tindak lanjut sesuai SOP resmi BAPENDA Kota Bandar Lampung.
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       DRAWER DETAIL SLIDE-OVER OBJEK REKLAME
+       ========================================================================= -->
+  <div class="drawer-backdrop" id="object-drawer-backdrop"></div>
+  <aside class="drawer-panel" id="object-drawer">
+    <div class="drawer-header">
+      <div>
+        <div class="title-md text-primary" id="drawer-object-id">RKL-001</div>
+        <div class="text-xs text-outline truncate max-w-[320px]" id="drawer-object-name">Memuat nama objek...</div>
+      </div>
+      <button class="btn btn-outline btn-sm" id="btn-close-drawer" aria-label="Tutup Detail">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Badge Simulasi di Drawer -->
+      <div class="badge badge-simulasi w-fit">
+        <span class="material-symbols-outlined text-xs">science</span>
+        DATA SIMULASI
+      </div>
+
+      <!-- Tab Bagian 1: Identitas Sumber Data -->
+      <div>
+        <h4 class="title-md text-primary mb-2 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-secondary">info</span>
+          Atribut Sumber Inventaris
+        </h4>
+        <div class="flex flex-col gap-2 text-xs bg-surface-low p-3 rounded border border-outline-variant">
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-outline">Wilayah / Area:</span>
+            <span class="font-medium" id="drw-area">-</span>
+          </div>
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-outline">Jenis Reklame:</span>
+            <span class="font-medium" id="drw-type">-</span>
+          </div>
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-outline">Dimensi / Ukuran:</span>
+            <span class="font-medium data-tabular" id="drw-size">-</span>
+          </div>
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-outline">Status Administrasi:</span>
+            <span id="drw-admin-status">-</span>
+          </div>
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-outline">Tanggal Tercatat:</span>
+            <span class="data-tabular" id="drw-recorded">-</span>
+          </div>
+          <div class="flex justify-between py-1">
+            <span class="text-outline">Status Verifikasi:</span>
+            <span id="drw-verif-badge">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Bagian 2: Koordinat & Lokasi -->
+      <div>
+        <h4 class="title-md text-primary mb-2 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-secondary">place</span>
+          Koordinat Geografis
+        </h4>
+        <div class="text-xs p-3 bg-surface-low rounded border border-outline-variant" id="drw-coords-box">
+          <!-- Populated -->
+        </div>
+      </div>
+
+      <!-- Tab Bagian 3: Temuan Anomali Terkait Objek Ini -->
+      <div>
+        <h4 class="title-md text-primary mb-2 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-error">warning</span>
+          Temuan Anomali Terkait (<span id="drw-findings-count">0</span>)
+        </h4>
+        <div class="flex flex-col gap-2" id="drw-findings-list">
+          <!-- Finding cards injected -->
+        </div>
+      </div>
+
+      <!-- Tab Bagian 4: Form Tindakan Verifikasi Manusia -->
+      <div class="p-3 bg-surface-container rounded border border-outline-variant">
+        <h4 class="title-md text-primary mb-2 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-success">fact_check</span>
+          Tindakan Verifikasi Petugas
+        </h4>
+        <form id="form-verify-object" class="flex flex-col gap-3 text-xs">
+          <div>
+            <label class="block font-medium text-on-surface mb-1">Status Verifikasi Baru:</label>
+            <select class="filter-select w-full" id="form-verif-status" required>
+              <option value="sedang_diperiksa">Sedang Diperiksa</option>
+              <option value="terkonfirmasi_masalah">Terkonfirmasi Masalah Data / Lapangan</option>
+              <option value="tidak_terbukti">Tidak Terbukti Setelah Pemeriksaan</option>
+              <option value="perlu_tindak_lanjut">Perlu Tindak Lanjut Khusus</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium text-on-surface mb-1">Catatan Hasil Pemeriksaan Lapangan:</label>
+            <textarea class="w-full p-2 border rounded font-sans text-xs bg-white text-on-surface" id="form-verif-notes" rows="3" placeholder="Masukkan catatan hasil observasi fisik atau verifikasi dokumen..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">
+            <span class="material-symbols-outlined text-xs">save</span>
+            Simpan Hasil Verifikasi
+          </button>
+        </form>
+      </div>
+
+      <!-- Tab Bagian 5: Riwayat Verifikasi Objek (Append-Only) -->
+      <div>
+        <h4 class="title-md text-primary mb-2 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-secondary">history</span>
+          Riwayat Perubahan Status (Append-Only)
+        </h4>
+        <div class="flex flex-col gap-2" id="drw-history-list">
+          <!-- History items injected -->
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn btn-secondary btn-sm" id="btn-drawer-close-bottom">Tutup</button>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       MODAL KONFIRMASI AKTIVASI DATASET
+       ========================================================================= -->
+  <div class="modal-backdrop" id="modal-confirm-import">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="title-md text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-warning">warning</span>
+          Konfirmasi Aktivasi Dataset
+        </div>
+        <button class="btn btn-outline btn-sm" id="btn-modal-import-close">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+      <div class="modal-body text-xs text-on-surface flex flex-col gap-3">
+        <p>Anda akan mengaktifkan dataset baru ke dalam sistem <strong>PAD Intelligence Lite</strong>.</p>
+        <div class="p-3 bg-surface-low border rounded">
+          <div>Nama File: <strong id="modal-import-filename" class="text-primary">-</strong></div>
+          <div>Jumlah Objek Diterima: <strong id="modal-import-count" class="text-primary">0</strong> baris</div>
+        </div>
+        <p class="text-outline">
+          Tindakan ini akan menjalankan ulang seluruh mesin aturan deteksi anomali (RULE-01 s/d RULE-07) dan memperbarui urutan prioritas pemeriksaan. Dataset sebelumnya akan diarsipkan dalam riwayat impor.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" id="btn-modal-import-cancel">Batal</button>
+        <button class="btn btn-primary btn-sm" id="btn-modal-import-proceed">
+          <span class="material-symbols-outlined text-sm">check</span>
+          Ya, Aktifkan Sekarang
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL TENTANG PROTOTIPE
+       ========================================================================= -->
+  <div class="modal-backdrop" id="modal-about">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="title-md text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary">info</span>
+          Tentang PAD Intelligence Lite
+        </div>
+        <button class="btn btn-outline btn-sm" id="btn-modal-about-close">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+      <div class="modal-body text-xs text-on-surface flex flex-col gap-3 leading-relaxed">
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded text-amber-900">
+          <strong>Status Prototipe Akademik MVP:</strong>
+          Aplikasi ini dikembangkan untuk menguji alur kerja analitis pengawasan inventaris reklame, validasi dataset CSV, deteksi anomali berbasis aturan transparan, dan penelusuran riwayat verifikasi tanpa ketergantungan integrasi langsung sistem Pemkot.
+        </div>
+        <p><strong>Organisasi:</strong> Badan Pendapatan Daerah (BAPENDA) Kota Bandar Lampung</p>
+        <p><strong>Cakupan Wilayah Demo:</strong> Kota Bandar Lampung (Tanjung Karang Pusat, Teluk Betung Selatan, Kedaton, Way Halim, Sukarame, Rajabasa, Kemiling)</p>
+        <p><strong>Aturan Analitis (PRD Versi 2.0):</strong> Mengimplementasikan RULE-01 hingga RULE-07 dengan logika deterministik dan penelusuran sumber data.</p>
+        <p><strong>Batas Tanggung Jawab:</strong> Anomali bukan bukti pelanggaran. Seluruh data berlabel DATA SIMULASI.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary btn-sm" id="btn-modal-about-close-btn">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Leaflet JS untuk Peta -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Skrip Aplikasi -->
+  <script src="/js/rules.js"></script>
+  <script src="/js/data-store.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/map.js"></script>
+  <script src="/js/export.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
