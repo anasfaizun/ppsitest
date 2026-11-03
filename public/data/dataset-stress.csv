@@ -1,0 +1,26 @@
+object_id,object_name,area,reklame_type,size,size_unit,recorded_at,administrative_status,verification_status,latitude,longitude
+RKL-STR-001,Billboard Utama Bundaran Rajabasa,Rajabasa,Billboard,32,m2,2026-01-05,tercatat,belum_diperiksa,-5.3610,105.2410
+RKL-STR-002,,Kedaton,Baliho,16,m2,2026-01-08,tercatat,belum_diperiksa,-5.3820,105.2590
+RKL-STR-003,Neon Box Kafe Sudirman,Tanjung Karang Pusat,Neon Box,-10,m2,2026-01-10,tercatat,belum_diperiksa,-5.4220,105.2580
+RKL-STR-004,Billboard Brand Elektronik Way Halim,Way Halim,Billboard,24,m2,2026-01-12,tercatat,belum_diperiksa,-5.3910,
+,Bando Jalan Rusak Tanpa ID,Sukarame,Bando Jalan,28,m2,2026-01-15,tercatat,belum_diperiksa,-5.3950,105.3050
+RKL-STR-006,Shopfront Toko Kelontong Kemiling,Kemiling,Shopfront Signage,4,m2,2026-01-18,tidak_baku,belum_diperiksa,-5.4050,105.2310
+RKL-STR-007,Billboard Perumahan Mewah Teluk Betung,Teluk Betung Selatan,Billboard,30,m2,2026-01-20,,belum_diperiksa,-5.4490,105.2720
+RKL-STR-008,Videotron Simpang Pertanian,Rajabasa,Videotron,40,m2,2026-01-22,tercatat,belum_diperiksa,-6.1754,106.8272
+RKL-STR-009,Baliho Promo Diskon Gede Kartini,Tanjung Karang Pusat,Baliho,0,m2,2026-01-25,tercatat,belum_diperiksa,-5.4180,105.2530
+RKL-STR-010,Signage Showroom Mobil Kedaton,Kedaton,Shopfront Signage,8,m2,2026-01-28,tercatat,belum_diperiksa,99.999,999.999
+RKL-STR-011,Billboard Provider Internet Teluk Betung,Teluk Betung Selatan,Billboard,24,m2,2026-02-01,tercatat,belum_diperiksa,-5.4520,105.2760
+RKL-STR-011,Billboard Provider Internet Teluk Betung Duplikat ID,Teluk Betung Selatan,Billboard,24,m2,2026-02-02,tercatat,belum_diperiksa,-5.4521,105.2761
+RKL-STR-013,Neon Box Apotek 24 Jam Ryacudu,Sukarame,Neon Box,ABC,m2,2026-02-05,tercatat,belum_diperiksa,-5.3860,105.3010
+RKL-STR-014,Baliho Kuliner Nusantara Kemiling,Kemiling,,12,m2,2026-02-08,tercatat,belum_diperiksa,-5.4030,105.2270
+RKL-STR-015,Billboard Semen Tiga Roda Bypass,Sukarame,Billboard,32,m2,2026-02-10,tercatat,belum_diperiksa,,105.3080
+RKL-STR-016,Bando Jalan Flyover Pramuka,Rajabasa,Bando Jalan,30,m2,2026-02-12,tercatat,belum_diperiksa,-5.3640,105.2370
+RKL-STR-017,Shopfront Toko Buku Raden Intan,Tanjung Karang Pusat,Shopfront Signage,6,m2,2026-02-15,tercatat,belum_diperiksa,-5.4160,105.2570
+RKL-STR-018,Videotron Mall Boemi Kedaton Layar 2,Kedaton,Videotron,36,m2,2026-02-18,tercatat,sedang_diperiksa,-5.3815,105.2605
+RKL-STR-019,Neon Box Optik Modern Kartini,Tanjung Karang Pusat,Neon Box,4,m2,2026-02-20,tercatat,belum_diperiksa,-5.4175,105.2535
+RKL-STR-020,Baliho Turnamen Futsal Way Halim,Way Halim,Baliho,14,m2,2026-02-22,proses_perpanjangan,belum_diperiksa,-5.3930,105.2740
+RKL-STR-021,Billboard Dealer Sepeda Motor Kemiling,Kemiling,Billboard,20,m2,2026-02-25,tercatat,belum_diperiksa,-5.4070,105.2260
+RKL-STR-022,Shopfront Bengkel Resmi Honda Antasari,Kedaton,Shopfront Signage,8,m2,2026-02-27,tercatat,belum_diperiksa,-5.3880,105.2660
+RKL-STR-023,Billboard Minyak Goreng Teluk Betung,Teluk Betung Selatan,Billboard,18,m2,2026-03-01,tercatat,belum_diperiksa,-5.4470,105.2690
+RKL-STR-024,Bando Jalan Sultan Agung Way Halim,Way Halim,Bando Jalan,26,m2,2026-03-03,tercatat,belum_diperiksa,-5.3890,105.2800
+RKL-STR-025,Neon Box Bank Syariah Raden Intan,Tanjung Karang Pusat,Neon Box,6,m2,2026-03-05,tercatat,belum_diperiksa,-5.4140,105.2560

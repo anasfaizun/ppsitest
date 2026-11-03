@@ -1,0 +1,19 @@
+object_id,object_name,area,reklame_type,size,size_unit,recorded_at,administrative_status,verification_status,latitude,longitude
+RKL-CLN-001,Billboard Bank Mandiri Raden Intan,Tanjung Karang Pusat,Billboard,24,m2,2026-01-10,tercatat,terkonfirmasi_masalah,-5.4172,105.2580
+RKL-CLN-002,Videotron Transmart Lampung,Way Halim,Videotron,36,m2,2026-01-12,tercatat,belum_diperiksa,-5.3935,105.2795
+RKL-CLN-003,Baliho Wisata Pantai Pasir Putih,Teluk Betung Selatan,Baliho,18,m2,2026-01-14,tercatat,belum_diperiksa,-5.4490,105.2730
+RKL-CLN-004,Bando Jalan Flyover Kedaton,Kedaton,Bando Jalan,32,m2,2026-01-16,tercatat,sedang_diperiksa,-5.3850,105.2588
+RKL-CLN-005,Neon Box Bank BCA Sudirman,Tanjung Karang Pusat,Neon Box,6,m2,2026-01-18,tercatat,belum_diperiksa,-5.4230,105.2605
+RKL-CLN-006,Shopfront Apotek K24 ZA Pagar Alam,Kedaton,Shopfront Signage,4,m2,2026-01-20,tercatat,belum_diperiksa,-5.3760,105.2540
+RKL-CLN-007,Billboard Perumahan Citra Garden,Teluk Betung Selatan,Billboard,20,m2,2026-01-22,tercatat,belum_diperiksa,-5.4460,105.2650
+RKL-CLN-008,Videotron Mall Simpur Center,Tanjung Karang Pusat,Videotron,28,m2,2026-01-25,tercatat,belum_diperiksa,-5.4195,105.2545
+RKL-CLN-009,Baliho Dies Natalis Unila,Rajabasa,Baliho,15,m2,2026-01-28,tercatat,belum_diperiksa,-5.3650,105.2450
+RKL-CLN-010,Billboard Kendaraan Komersial Soekarno Hatta,Sukarame,Billboard,30,m2,2026-02-01,tercatat,belum_diperiksa,-5.3920,105.3040
+RKL-CLN-011,Neon Box Restoran Padang Kartini,Tanjung Karang Pusat,Neon Box,8,m2,2026-02-04,tercatat,belum_diperiksa,-5.4180,105.2520
+RKL-CLN-012,Shopfront Toko Komputer Pramuka,Rajabasa,Shopfront Signage,5,m2,2026-02-06,tercatat,belum_diperiksa,-5.3680,105.2380
+RKL-CLN-013,Billboard Layanan Telekomunikasi Ki Maja,Way Halim,Billboard,24,m2,2026-02-08,tercatat,belum_diperiksa,-5.3900,105.2740
+RKL-CLN-014,Bando Jalan Gatot Subroto Pahoman,Teluk Betung Selatan,Bando Jalan,26,m2,2026-02-10,tercatat,belum_diperiksa,-5.4370,105.2640
+RKL-CLN-015,Neon Box Klinik Pratama Imam Bonjol,Kemiling,Neon Box,6,m2,2026-02-12,tercatat,belum_diperiksa,-5.4040,105.2290
+RKL-CLN-016,Shopfront Butik Fashion Kartini,Tanjung Karang Pusat,Shopfront Signage,5,m2,2026-02-14,tercatat,belum_diperiksa,-5.4165,105.2530
+RKL-CLN-017,Baliho Expo Properti Lampung Walk,Way Halim,Baliho,16,m2,2026-02-16,tercatat,belum_diperiksa,-5.3945,105.2760
+RKL-CLN-018,Billboard Semen Merah Putih Bypass,Sukarame,Billboard,28,m2,2026-02-18,tercatat,belum_diperiksa,-5.3960,105.3070
